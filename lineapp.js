@@ -16,53 +16,56 @@ class lineApp {
         switch (payload.command) {
             case Commands.ADD_TRACK: {
                 // เพิ่มเพลงที่ผู้ใช้เลือกใน Flex message เข้าไปใน Playlist
-                await spotify.queueTrack(payload.track);
- 
-                const message = {
-                    type: "flex",
-                    altText: "Thanks! Your track has been added.",
-                    contents:
-                    {
-                        type: "bubble",
-                        size: "kilo",
-                        body: {
-                            type: "box",
-                            layout: "vertical",
-                            contents: [
-                                {
-                                    type: "text",
-                                    contents: [
-                                        {
-                                            type: "span",
-                                            text: "Thanks! ",
-                                            color: "#1DB954",
-                                            weight: "bold",
-                                            size: "md"
-                                        },
-                                        {
-                                            type: "span",
-                                            text: "Your track has been added to the BrownJukebox playlist 🎶",
-                                            color: "#191414"
-                                        }
-                                    ],
-                                    wrap: true
-                                }
-                            ]
-                        },
-                        styles: {
-                            body: {
-                                backgroundColor: "#FFFFFF"
-                            }
-                        }
-                    }
-                };
-                return message;
+                return this.queueMusic(payload.track);
             }
             case Commands.SEARCH_MORE: {
                 // เรียกเมธอด searchMusic อีกครั้งพร้อมกับส่ง parameters ที่อยู่ใน payload
                 return this.searchMusic(payload.terms, payload.skip, payload.limit);
             }
         }
+    }
+
+    async queueMusic(track) {
+        await spotify.queueTrack(track);
+        const message = {
+            type: "flex",
+            altText: "Thanks! Your track has been added.",
+            contents:
+            {
+                type: "bubble",
+                size: "kilo",
+                body: {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                        {
+                            type: "text",
+                            contents: [
+                                {
+                                    type: "span",
+                                    text: "Thanks! ",
+                                    color: "#1DB954",
+                                    weight: "bold",
+                                    size: "md"
+                                },
+                                {
+                                    type: "span",
+                                    text: "Your track has been added to the BrownJukebox playlist 🎶",
+                                    color: "#191414"
+                                }
+                            ],
+                            wrap: true
+                        }
+                    ]
+                },
+                styles: {
+                    body: {
+                        backgroundColor: "#FFFFFF"
+                    }
+                }
+            }
+        };
+        return message;
     }
 
     async searchMusic(terms, skip = 0, limit = 10) {
