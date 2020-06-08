@@ -4,6 +4,7 @@ const express = require("express");
 const lineApp = require("./lineapp");
 const spotify = require("./spotify");
 const bodyParser = require("body-parser");
+const crypto = require('crypto');
 
 const app = express();
 app.use(bodyParser.json());
@@ -15,6 +16,12 @@ app.listen(port, () => {
 });
 
 app.post("/webhook", async (req, res) => {
+    const text = JSON.stringify(req.body);
+    const signature = crypto.createHmac('SHA256', process.env.LINE_CHANNEL_SECRET).update(text).digest('base64').toString();
+    if (signature !== req.headers['x-line-signature']) {
+        return res.status(401).send('Unauthorized');
+    }
+    
     let event = req.body.events[0];
     let message;
     if (event.type === 'message' && event.message.type === 'text') {
